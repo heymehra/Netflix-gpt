@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef,useEffect } from 'react'
 import Header from './Header'
 import { checkValidData } from '../utils/validate'
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -7,7 +7,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { updateProfile } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
 import { addUser } from '../utils/userSlice';
-import { userAvatar } from '../utils/Constant';
+import { BG_URL, userAvatar } from '../utils/Constant';
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
@@ -17,6 +17,13 @@ const Login = () => {
   const name = useRef(null);
   const email = useRef(null);
   const password = useRef(null);
+
+  useEffect(() => {
+  if (name.current) name.current.value = '';
+  if (email.current) email.current.value = '';
+  if (password.current) password.current.value = '';
+  setErrorMessage(null);
+}, [isSignInForm]);
 
   const handleButtonClick = () => {
     //validate the form data
@@ -37,7 +44,7 @@ const Login = () => {
             displayName: name.current?.value, photoURL: userAvatar
           })
             .then(() => {
-              const {uid,email,displayName,photoURL} = auth.currentUser;
+              const { uid, email, displayName, photoURL } = auth.currentUser;
               dispatch(
                 addUser(
                   {
@@ -82,11 +89,11 @@ const Login = () => {
   return (
     <div>
       <Header />
-      <div className='absolute'>
-        <img src="https://assets.nflxext.com/ffe/siteui/vlv3/6863f6e8-d419-414d-b5b9-7ef657e67ce4/web/IN-en-20250602-TRIFECTA-perspective_27a3fdfa-126f-4148-b153-55d60b51be6a_medium.jpg" alt="logo" />
+      <div className="fixed inset-0 -z-10 w-screen h-screen overflow-hidden   ">
+        <img className= "object-cover" src={BG_URL} />
       </div>
 
-      <form onSubmit={(e) => e.preventDefault()} className="w-3/12 absolute p-12 bg-black my-36 mx-auto right-0 left-0 text-white rounded-lg bg-opacity-75">
+      <form onSubmit={(e) => e.preventDefault()} className="w-full md:w-3/12 absolute p-12 bg-black my-36 mx-auto right-0 left-0 text-white rounded-lg bg-opacity-75">
         <h1 className="font-bold text-3xl py-4">{isSignInForm ? 'Sign In' : 'Sign Up'}</h1>
 
         {!isSignInForm &&
@@ -100,12 +107,14 @@ const Login = () => {
           ref={email}
           type="text"
           placeholder="Email or mobile number"
+          autoComplete='off'
           className="p-4 my-2 w-full bg-white bg-opacity-10 text-white rounded-md outline-none"
         />
         <input
           ref={password}
           type="password"
           placeholder="Password"
+          autoComplete='off'
           className="p-4 my-2 w-full bg-white bg-opacity-10 text-white rounded-md outline-none"
         />
         <p className='text-red-500 font-bold text-sm py-3'>{errorMessage}</p>

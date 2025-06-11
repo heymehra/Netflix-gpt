@@ -9,7 +9,7 @@ const Body = () => {
     const appRouter = createBrowserRouter([
         {
             path: '/',
-            element: <Login />
+            element: <Login  key={window.location.pathname}/>
         },
         {
             path: '/browse',
